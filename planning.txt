@@ -1,0 +1,46 @@
+tvt application
+what??
+a functionality where personal search for a record data
+
+
+model?
+Routes?
+
+app functionality
+
+1.user sign in or sign up
+2.user able to search userdata and record on basis of license number
+3.user able to make change in citation record but not in thier personal record
+4.user must contain one unique government id proof named :badge no.
+5.there should be one admin who can only maintain rules, record
+6.user can change thier password
+7.user can only log in with their badge no. and password
+8.Admin cant change ped citation record
+
+
+------------------------------------------------------------------------
+
+Routes:
+
+User Authentication:
+/signup: POST -Create a new user account.
+/login: POST- login to a existing account.
+
+Searching:
+/search/:licenseNumber: GET -the data on the basis of licenseNumber
+/search/:licenseNumber: PUT -can update only citation record
+
+User Profile: 
+/profile :GET -the user's profile info.
+/profile/password: PUT - changeth user's password.
+
+Admin Management:
+/records: POST - create a new record.
+/records: GET -get the list of records
+/rules: POST - create new rules
+/rules: GET - get the list of records
+/rules: DELETE- delete rules
+/rules/:id: PUT -update existing rule
+/records/:recordID: PUT -update an existing record
+/records/:recordID: DELETE a record from list
+
