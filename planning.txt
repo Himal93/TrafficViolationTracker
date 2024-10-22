@@ -28,7 +28,7 @@ User Authentication:
 
 Searching:
 /search/:licenseNumber: GET -the data on the basis of licenseNumber
-/search/:licenseNumber: PUT -can update only citation record
+/search/edit/:licenseNumber: PUT -can update only citation record
 
 User Profile: 
 /profile :GET -the user's profile info.
@@ -36,7 +36,7 @@ User Profile:
 
 Admin Management:
 /records: POST - create a new record.
-/records: GET -get the list of records
+/records: GET -get the list of record
 /rules: POST - create new rules
 /rules: GET - get the list of records
 /rules: DELETE- delete rules

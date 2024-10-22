@@ -1,12 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./../models/user');
-const {jwtAuthMiddleware, generateToken} = require('./../jwt');
+const {jwtAuthMiddleware, generateToken} = require('../jwt');
+const Pedrecord = require('../models/user'); 
+
+
+// function to check if an admin exists
+const checkAdminExists = async () => {
+    const admin = await User.findOne({ role: 'admin' });
+    return admin ? true : false;
+};
 
 // POST route to add a user
 router.post('/signup', async(req,res)=>{
     try{
         const data = req.body  //assuming request body conatins user data
+
+        // id role is admin, check if another admin exists
+        if (data.role === 'admin') {
+            const adminExists = await checkAdminExists();
+            if (adminExists) {
+                return res.status(403).json({ message: 'Admin already exists. Only one admin is allowed.' });
+            }
+        }
 
         // Create a new user document using Mongoose model
         const newUser = new User(data);
@@ -83,7 +99,7 @@ router.get('/profile',jwtAuthMiddleware ,async(req, res) =>{
     }
 })
 
-// PUT method to update the data in databases
+// PUT method to change the password
 router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
     try{
         const userId = req.user; //extract the id from token
@@ -109,5 +125,6 @@ router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
         res.status(500).json('Internal server error');
     }
 });
+
 
 module.exports = router;

@@ -33,6 +33,10 @@ const pedRecordsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    citationRecords:{
+        type: String,
+        default: []
+    },
     issuedby:[
         {
             user:{
@@ -45,11 +49,7 @@ const pedRecordsSchema = new mongoose.Schema({
                 default: Date.now()
             }
         }
-    ],
-    timesStopped: {
-        type: Number,
-        default: 0
-    }
+    ]  
 });
 
 // Create User model

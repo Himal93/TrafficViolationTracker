@@ -10,10 +10,13 @@ app.use(bodyParser.json());
 // import the router files
 const userRoutes = require('./routes/userRoutes');
 const pedrecordRoutes = require('./routes/pedrecordsRoutes');
+const admin = require('./routes/admin');
+const search = require('./routes/search');
 
 // use the routers
 app.use('/user', userRoutes);
 app.use('/pedrecord', pedrecordRoutes);
+app.use('/Rule', admin);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
