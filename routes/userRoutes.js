@@ -6,44 +6,12 @@ const Pedrecord = require('../models/user');
 
 
 // function to check if an admin exists
-const checkAdminExists = async () => {
-    const admin = await User.findOne({ role: 'admin' });
-    return admin ? true : false;
-};
+// const checkAdminExists = async () => {
+//     const admin = await User.findOne({ role: 'admin' });
+//     return admin ? true : false;
+// };
 
-// POST route to add a user
-router.post('/signup', async(req,res)=>{
-    try{
-        const data = req.body  //assuming request body conatins user data
 
-        // id role is admin, check if another admin exists
-        if (data.role === 'admin') {
-            const adminExists = await checkAdminExists();
-            if (adminExists) {
-                return res.status(403).json({ message: 'Admin already exists. Only one admin is allowed.' });
-            }
-        }
-
-        // Create a new user document using Mongoose model
-        const newUser = new User(data);
-
-        //Save the new user to the database
-        const response = await newUser.save();
-        console.log('data saved');
-
-        const payload = {
-            id: response.id, //here response.id use object id i.e _id from data
-        }
-        const token = generateToken(payload);
-        console.log('Token is:', token);
-
-        res.status(200).json({response: response, token: token});
-
-    }catch(err){
-        console.log(err);
-        res.status(500).json('Internal server error');
-    }
-});
 
 // Login route
 router.post('/login', async(req, res) =>{

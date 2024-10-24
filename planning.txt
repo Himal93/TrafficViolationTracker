@@ -23,7 +23,6 @@ app functionality
 Routes:
 
 User Authentication:
-/signup: POST -Create a new user account.
 /login: POST- login to a existing account.
 
 Searching:
@@ -35,6 +34,7 @@ User Profile:
 /profile/password: PUT - changeth user's password.
 
 Admin Management:
+/register: POST - to register user
 /records: POST - create a new record.
 /records: GET -get the list of record
 /rules: POST - create new rules

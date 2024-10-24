@@ -23,7 +23,8 @@ const search = require('./routes/search');
 // use the routers
 app.use('/user', userRoutes);
 app.use('/pedrecord', pedrecordRoutes);
-app.use('/Rule', admin);
+// app.use('/Rule', admin);
+app.use('/user', admin);
 
 
 // Serve static files from the React app

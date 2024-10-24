@@ -29,7 +29,7 @@ const Record = require('../models/pedrecord');
 // GET /search/:licenseNumber - Search for a record by licenseNumber
 router.get('/search/:licenseNumber', async (req, res) => {
   try{
-    const record = await pedrecord.findOne({ licenseNumber: req.params.licenseNumber });
+    const record = await Record.findOne({ licenseNumber: req.params.licenseNumber });
     if (record) {
         res.json(record);
     } else {
@@ -43,11 +43,11 @@ router.get('/search/:licenseNumber', async (req, res) => {
 
 // PUT /search/edit/:licenseNumber - Update citation record by licenseNumber
 router.put('/search/edit/:licenseNumber', async (req, res) => {
-    const { citation } = req.body; // Assuming we are updating only citation
+    const { violationRecord } = req.body; // Assuming we are updating only citation
     try {
-        const updatedRecord = await pedrecord.findOneAndUpdate(
+        const updatedRecord = await Record.findOneAndUpdate(
             { licenseNumber: req.params.licenseNumber },
-            { $set: { citation } },
+            { $set: { violationRecord } },
             { new: true }
         );
         res.json(updatedRecord);

@@ -33,7 +33,7 @@ const pedRecordsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    citationRecords:{
+    violationRecords:{
         type: String,
         default: []
     },
