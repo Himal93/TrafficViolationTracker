@@ -48,7 +48,7 @@ router.post('/rules', async (req, res) => {
   });
 
   // POST route to add a user
-router.post('/register', async(req,res)=>{
+router.post('/register',jwtAuthMiddleware, async(req,res)=>{
     try{
         const data = req.body  //assuming request body conatins user data
 
