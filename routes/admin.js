@@ -7,13 +7,13 @@ const {jwtAuthMiddleware, generateToken} = require('../jwt');
 
 // Create a new rule
 router.post('/rules', async (req, res) => {
-    const { title, description } = req.body;
+    const { title, fine } = req.body;
     try {
-      const rule = new Rule({ title, description });
+      const rule = new Rule({ title, fine });
       await rule.save();
       res.status(201).json(rule);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).json({ message: err.message });
     }
   });
   
@@ -23,7 +23,7 @@ router.post('/rules', async (req, res) => {
       const rules = await Rule.find();
       res.json(rules);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).json({ message: err.message });
     }
   });
   
@@ -33,7 +33,7 @@ router.post('/rules', async (req, res) => {
       await Rule.findByIdAndDelete(req.params.id);
       res.json({ message: 'Rule deleted successfully' });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).json({ message: err.message });
     }
   });
   
@@ -43,7 +43,7 @@ router.post('/rules', async (req, res) => {
       const rule = await Rule.findByIdAndUpdate(req.params.id, req.body, { new: true });
       res.json(rule);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).json({ message: err.message });
     }
   });
 

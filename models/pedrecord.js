@@ -8,11 +8,7 @@ const pedRecordsSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    firstName:{
-        type: String,
-        required: true
-    },
-    lastName:{
+    name: {
         type: String,
         required: true
     },
@@ -23,7 +19,7 @@ const pedRecordsSchema = new mongoose.Schema({
     },
     age:{
         type: Number,
-        unique: true
+        required: true
     },
     dob:{
         type: String,
@@ -33,10 +29,7 @@ const pedRecordsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    violationRecords:{
-        type: String,
-        default: []
-    },
+    violationRecords:[String],
     issuedby:[
         {
             user:{
@@ -44,7 +37,7 @@ const pedRecordsSchema = new mongoose.Schema({
                 ref: "User",
                 required: true
             },
-            issuedat:{
+            issuedate:{
                 type: Date,
                 default: Date.now()
             }
@@ -52,6 +45,6 @@ const pedRecordsSchema = new mongoose.Schema({
     ]  
 });
 
-// Create User model
+// Create ped model
 const PedRecords = mongoose.model('PedRecords', pedRecordsSchema);
 module.exports = PedRecords;

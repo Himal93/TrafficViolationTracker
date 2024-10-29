@@ -13,24 +13,24 @@ app.use(cors({
 
 const bodyParser = require('body-parser'); 
 app.use(bodyParser.json());
+// app.use(express.json());
 
 // import the router files
 const userRoutes = require('./routes/userRoutes');
 const pedrecordRoutes = require('./routes/pedrecordsRoutes');
 const admin = require('./routes/admin');
-const search = require('./routes/search');
+// const search = require('./routes/search');
 
 // use the routers
 app.use('/user', userRoutes);
 app.use('/pedrecord', pedrecordRoutes);
-// app.use('/Rule', admin);
-app.use('/user', admin);
+app.use('/api/admin', admin);
 
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Handle React routing, return all requests to React app
+// // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

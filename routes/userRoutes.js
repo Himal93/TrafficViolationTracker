@@ -26,6 +26,7 @@ router.post('/login', async(req, res) =>{
         if(!user || !(await user.comparePassword(password))){
             return res.status(401).json({error: 'Invalid username or password'});
         }
+        res.status(200).json({message: 'Login Successful'});
 
         //generate token after expire
         const payload ={
@@ -65,7 +66,7 @@ router.get('/profile',jwtAuthMiddleware ,async(req, res) =>{
         console.log(err);
         res.status(500).json('Internal server error');  
     }
-})
+});
 
 // PUT method to change the password
 router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{

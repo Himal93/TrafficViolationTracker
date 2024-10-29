@@ -5,10 +5,11 @@ const RuleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description:{
-        type: String
+    fine:{
+        type: Number,
+        required: true
     }
-})
+});
 
 const Rule = mongoose.model('Rule', RuleSchema);
 module.exports = Rule;

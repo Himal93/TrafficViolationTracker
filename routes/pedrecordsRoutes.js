@@ -63,6 +63,19 @@ router.put('/:pedrecordID', jwtAuthMiddleware, async(req,res)=>{
     }
 });
 
+//GEt method to retrive the pedrecord
+router.get('/getAllUser', async(req, res) =>{
+    try{
+        const data = await Pedrecord.find();
+        console.log('data fetched');
+        res.status(200).json(data);
+    }catch(err){
+        console.log(err);
+        res.status(500).json('Internal server error');
+    }
+});
+
+
 // DELETE method
 router.delete('/:pedrecordID', jwtAuthMiddleware, async(req,res)=>{
     try{
