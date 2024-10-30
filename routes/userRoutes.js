@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('./../models/user');
 const {jwtAuthMiddleware, generateToken} = require('../jwt');
 const Pedrecord = require('../models/user'); 
+const violationlist = require('../models/voilation.model');
 
 
 // function to check if an admin exists
@@ -97,3 +98,49 @@ router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
 
 
 module.exports = router;
+
+
+  // POST route to add a user
+  router.post('/violationRoute', async(req,res)=>{
+    try{
+            const { violationlist } = req.body; // violationlist contain violators with their crime
+          
+            // Fetch the user making the change in violation record
+            const user = await User.findOne(req.user.licenseNum);
+
+            // Validate and fetch violation
+            const populatedOrderItems = await Promise.all(
+              orderItems.map(async (item) => {
+                const product = await Record.findById(item.productId);
+          
+                await product.save();
+          
+                return {
+                  productId: product._id,
+                  quantity: item.quantity,
+                  name: product.productname,
+                  image: product.productImage,
+                };
+              })
+            );
+            // Calculate the total price
+            const totalPrice = await populatedOrderItems.reduce(
+              async (totalPromise, item) => {
+                const total = await totalPromise;
+                const product = await Product.findById(item.productId);
+                if (!product) {
+                  throw new ApiError(
+                    404,
+                    `Product with ID ${item.productId} not found during price calculation`
+                  );
+                }
+                return total + product.price * item.quantity;
+              },
+              Promise.resolve(0)
+            );
+          
+    }catch(err){
+        console.log(err);
+        res.status(500).json('Internal server error');
+    }
+});

@@ -29,11 +29,17 @@ const Record = require('../models/pedrecord');
 // GET /search/:licenseNumber - Search for a record by licenseNumber
 router.get('/search/:licenseNumber', async (req, res) => {
   try{
-    const record = await Record.findOne({ licenseNumber: req.params.licenseNumber });
-    if (record) {
-        res.json(record);
-    } else {
+    const {licenseNumber}=req.params
+    console.log(licenseNumber);
+    
+    
+    const record = await Record.findOne({ licenseNum:licenseNumber });
+    console.log(record);
+    
+    if (!record) {
         res.status(404).json({ message: 'Record not found' });
+    } else {
+        res.json(record);
     }
   }catch(err){
     console.log(err);
@@ -41,9 +47,11 @@ router.get('/search/:licenseNumber', async (req, res) => {
   }
 });
 
-// PUT /search/edit/:licenseNumber - Update citation record by licenseNumber
+// PUT /search/edit/:licenseNumber - Update violation record by licenseNumber
 router.put('/search/edit/:licenseNumber', async (req, res) => {
-    const { violationRecord } = req.body; // Assuming we are updating only citation
+    const { violationRecord } = req.body;
+     // Assuming we are updating only violation
+     res.send("yo boi")
     try {
         const updatedRecord = await Record.findOneAndUpdate(
             { licenseNumber: req.params.licenseNumber },

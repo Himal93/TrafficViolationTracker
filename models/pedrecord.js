@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { type } = require('os');
 
 // define the User schema
 const pedRecordsSchema = new mongoose.Schema({
@@ -14,7 +13,7 @@ const pedRecordsSchema = new mongoose.Schema({
     },
     sex:{
         type: String,
-        enum: ['Male', 'Female', 'Others'],
+        enum: ['Male', 'Female'],
         required: true
     },
     age:{
@@ -28,22 +27,8 @@ const pedRecordsSchema = new mongoose.Schema({
     address:{
         type: String,
         required: true
-    },
-    violationRecords:[String],
-    issuedby:[
-        {
-            user:{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: true
-            },
-            issuedate:{
-                type: Date,
-                default: Date.now()
-            }
-        }
-    ]  
-});
+    }
+},{timestamps:true});
 
 // Create ped model
 const PedRecords = mongoose.model('PedRecords', pedRecordsSchema);
