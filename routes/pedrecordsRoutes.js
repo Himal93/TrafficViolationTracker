@@ -64,7 +64,7 @@ router.put('/:pedrecordID', jwtAuthMiddleware, async(req,res)=>{
 });
 
 //GEt method to retrive the pedrecord
-router.get('/getAllUser', async(req, res) =>{
+router.get('/getAllPedRecord', async(req, res) =>{
     try{
         const data = await Pedrecord.find();
         console.log('data fetched');

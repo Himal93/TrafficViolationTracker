@@ -48,10 +48,10 @@ router.get('/search/:licenseNumber', async (req, res) => {
 });
 
 // PUT /search/edit/:licenseNumber - Update violation record by licenseNumber
-router.put('/search/edit/:licenseNumber', async (req, res) => {
+router.patch('/search/edit/:licenseNumber', async (req, res) => {
     const { violationRecord } = req.body;
+
      // Assuming we are updating only violation
-     res.send("yo boi")
     try {
         const updatedRecord = await Record.findOneAndUpdate(
             { licenseNumber: req.params.licenseNumber },

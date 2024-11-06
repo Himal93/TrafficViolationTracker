@@ -18,7 +18,7 @@ router.post('/rules', async (req, res) => {
   });
   
   // Get list of rules
-  router.get('/rules', async (req, res) => {
+  router.get('/allrules', async (req, res) => {
     try {
       const rules = await Rule.find();
       res.json(rules);
@@ -79,6 +79,18 @@ router.post('/register',jwtAuthMiddleware, async(req,res)=>{
         console.log(err);
         res.status(500).json('Internal server error');
     }
+});
+
+//GEt method to retrive the User
+router.get('/getAllUser', async(req, res) =>{
+  try{
+      const data = await User.find();
+      console.log('data fetched');
+      res.status(200).json(data);
+  }catch(err){
+      console.log(err);
+      res.status(500).json('Internal server error');
+  }
 });
   
   module.exports = router;

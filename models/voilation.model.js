@@ -1,36 +1,39 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const violation = new mongoose.Schema({
-    title:{
-            type: String,
-            required: true
-        },
-        fine:{
-            type: Number,
-            required: true
-        }
-    });
-
-const violationlistSchema = new mongoose.Schema({
-    
- trafficPersonal:{
-    type:String,
-    required:true
- },
- licenseNum:{
-    type:Number,
-    required:true,
-    unique: true
- },
- violator:{
-    type: String,
-    required: true
- },
- violationRecords:[violation],
- fine:{
-    type: Number,
-    required: true
+// Define the violation schema
+const violationSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    fine: {
+        type: Number,
+        required: true
     }
-},{timestamps: true});
+});
 
-export     const violationlist =mongoose.Schema("violationlist",violationlistSchema)
+// Define the main schema
+const violationlistSchema = new mongoose.Schema({
+    trafficPersonal: {
+        type: String,
+        required: true
+    },
+    licenseNum: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    violator: {
+        type: String,
+        required: true
+    },
+    violationRecords: [violationSchema],  // Use the violationSchema here
+    fine: {
+        type: Number,
+        required: true
+    }
+}, { timestamps: true });
+
+// Export the model
+const ViolationList = mongoose.model("ViolationList", violationlistSchema);
+module.exports = { ViolationList };

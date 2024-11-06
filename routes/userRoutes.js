@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('./../models/user');
 const {jwtAuthMiddleware, generateToken} = require('../jwt');
 const Pedrecord = require('../models/user'); 
+const Rule = require('../models/Rule');
 const violationlist = require('../models/voilation.model');
 
 
@@ -96,51 +97,89 @@ router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
     }
 });
 
-
-module.exports = router;
-
-
-  // POST route to add a user
-  router.post('/violationRoute', async(req,res)=>{
-    try{
-            const { violationlist } = req.body; // violationlist contain violators with their crime
+// POST route to add violation list 
+router.patch('/violationRoute', async(req,res)=>{
+try{
+    const { violationlist, licenseNum, badgeNumber } = req.body; // violationlist contain violators with their crime
           
-            // Fetch the user making the change in violation record
-            const user = await User.findOne(req.user.licenseNum);
 
-            // Validate and fetch violation
-            const populatedOrderItems = await Promise.all(
-              orderItems.map(async (item) => {
-                const product = await Record.findById(item.productId);
-          
-                await product.save();
-          
-                return {
-                  productId: product._id,
-                  quantity: item.quantity,
-                  name: product.productname,
-                  image: product.productImage,
-                };
-              })
-            );
-            // Calculate the total price
-            const totalPrice = await populatedOrderItems.reduce(
-              async (totalPromise, item) => {
-                const total = await totalPromise;
-                const product = await Product.findById(item.productId);
-                if (!product) {
-                  throw new ApiError(
-                    404,
-                    `Product with ID ${item.productId} not found during price calculation`
-                  );
-                }
-                return total + product.price * item.quantity;
-              },
-              Promise.resolve(0)
-            );
-          
+     // Validate request data
+
+     console.log(violationlist);
+     
+     if (!violationlist || !Array.isArray(violationlist) || violationlist.length === 0) {
+        return res.status(400).json({ message: 'Violation list is missing or empty' });
+      }
+      if (!licenseNum || !badgeNumber) {
+        return res.status(400).json({ message: 'License number or badge number is missing' });
+      }
+
+    // Fetch the user making the change in violation record      
+    const issuer = await User.findOne({badgeNumber: badgeNumber});
+    if (!issuer) {
+        return res.status(404).json({ message: 'Issuer not found' });
+      }
+    const trafficPersonal = issuer.name;
+
+    // Fetch the violator’s record
+    const victim =  await Pedrecord.findOne({licenseNum:licenseNum});
+    if (!victim) {
+        return res.status(404).json({ message: 'Victim not found' });
+      }
+    const violator=victim.name;
+
+    // Fetch penalty information if `id` is provided
+    let fine = 0;
+    if (id) {
+      const penalty = await Rule.findById(id);
+      if (penalty) {
+        fine = penalty.fine;
+      } else {
+        return res.status(404).json({ message: 'Penalty rule not found' });
+      }
+    }
+            
+// validate and fetch rules for each violation in the list
+const victimViolations = await Promise.all(
+  violationlist.map(async (violation) => {
+  const rule = await Rule.findById(violation.id);
+  if (!rule){
+    res.status(404).json({message: "Rule not found"});
+  }
+    await violationlist.save();
+  })
+ )
+
+// Calculate the total fine
+const totalFine = await victimViolations.reduce(
+  async (totalPromise, violation) => {
+    const total = await totalPromise;
+    const rule = await Rule.findById(violation.id);
+    if (!rule) {
+      res.status(404).json({message:`Rule with ID ${violation.id} not found during calculation`});
+    }
+    return total + rule.price;
+  },
+  Promise.resolve(0)
+);
+   
+const newViolationRecord = await violationlist.create({
+    trafficPersonal,
+    licenseNum,
+    violator,
+    violationRecords:victimViolations,
+    fin:totalFine
+  });
+
+  res.status(201).json({
+    message: 'Violation record added successfully',
+    violationRecord: newViolationRecord
+  });
+
     }catch(err){
         console.log(err);
         res.status(500).json('Internal server error');
     }
 });
+
+module.exports = router;
