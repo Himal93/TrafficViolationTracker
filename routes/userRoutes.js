@@ -24,20 +24,25 @@ router.post('/login', async(req, res) =>{
         // find user by badgeNumber
         const user = await User.findOne({badgeNumber: badgeNumber});
         
+        
+        
+        
         // if user doesnt exist or password doesnt match, return err
         if(!user || !(await user.comparePassword(password))){
-            return res.status(401).json({error: 'Invalid username or password'});
+            console.log( await user.comparePassword(password));
+            
+            return res.status(401).json({error: 'Invalid badgeNumber or password'});
         }
         res.status(200).json({message: 'Login Successful'});
 
         //generate token after expire
-        const payload ={
-            id: user.id,
-        }
-        const token = generateToken(payload);
+        // const payload ={
+        //     id: user.id,
+        // }
+        // const token = generateToken(payload);
 
-        //return token as response
-        res.json({token: token});
+        // //return token as response
+        // res.json({token: token});
 
     }catch(err){
         console.log(err);

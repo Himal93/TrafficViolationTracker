@@ -17,25 +17,31 @@ const seedAdminUser = async () => {
    const badgeNumber=7852;
   const password = 'admin123'; // Set the admin password
 
+try{
   const existingUser = await User.findOne({ badgeNumber });
   if (existingUser) {
     console.log('Admin user already exists');
     return;
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
   const adminUser = new User({
     name,
     mobile,
     address,
     badgeNumber,
-    password: hashedPassword,
+    password,
     role: 'admin'
   });
 
   await adminUser.save();
   console.log('Admin user created successfully');
+} catch (error){
+  console.log('Error creating admin user:', error)
+} finally {
   mongoose.connection.close();
+}
 };
 
 seedAdminUser();
