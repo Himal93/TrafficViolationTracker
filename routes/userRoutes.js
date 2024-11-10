@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('./../models/user');
 const {jwtAuthMiddleware, generateToken} = require('../jwt');
-const Pedrecord = require('../models/user'); 
+const Pedrecord = require('../models/pedrecord'); 
 const Rule = require('../models/Rule');
 const violationlist = require('../models/voilation.model');
 
@@ -104,17 +104,11 @@ router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
 
 // POST route to add violation list 
 router.patch('/violationRoute', async(req,res)=>{
+
 try{
-    const { violationlist, licenseNum, badgeNumber } = req.body; // violationlist contain violators with their crime
+    const { rule, licenseNum, badgeNumber } = req.body; // violationlist contain violators with their crime
           
-
      // Validate request data
-
-     console.log(violationlist);
-     
-     if (!violationlist || !Array.isArray(violationlist) || violationlist.length === 0) {
-        return res.status(400).json({ message: 'Violation list is missing or empty' });
-      }
       if (!licenseNum || !badgeNumber) {
         return res.status(400).json({ message: 'License number or badge number is missing' });
       }
@@ -127,53 +121,97 @@ try{
     const trafficPersonal = issuer.name;
 
     // Fetch the violator’s record
-    const victim =  await Pedrecord.findOne({licenseNum:licenseNum});
+    const victim =  await Pedrecord.findOne({
+      licenseNum:licenseNum});
+    // console.log(victim);
+    
     if (!victim) {
         return res.status(404).json({ message: 'Victim not found' });
       }
     const violator=victim.name;
 
+    
+    const ruleIds = rule.map(r => r.id);
+    console.log("hi");
+    console.log(ruleIds);
+    
     // Fetch penalty information if `id` is provided
     let fine = 0;
-    if (id) {
-      const penalty = await Rule.findById(id);
+    if (rule) {
+      const penalty = await Rule.findById(rule);
       if (penalty) {
         fine = penalty.fine;
       } else {
         return res.status(404).json({ message: 'Penalty rule not found' });
       }
     }
-            
+
+    console.log("ih");
+    
 // validate and fetch rules for each violation in the list
-const victimViolations = await Promise.all(
-  violationlist.map(async (violation) => {
-  const rule = await Rule.findById(violation.id);
-  if (!rule){
-    res.status(404).json({message: "Rule not found"});
-  }
-    await violationlist.save();
-  })
- )
+
+// const dbrule = await Rule.findById(rule);
+// console.log(dbrule);
+
+
+    // Convert `rule` to an array of IDs if it's not already
+
+  
+    console.log(ruleIds);
+    
+    // Fetch and validate rules for each violation in the list
+    const victimViolations = await Promise.all(
+      ruleIds.map(async (rule) => {
+        console.log("rule",rule);
+        
+        const rulerecord = await Rule.findById(rule);
+        if (!rulerecord) {
+          res.status(404).json(`Rule with ID ${rule} not found`);
+        }
+        // return ruleRecord;
+        await violationlist.save();
+      })
+    );
+
+// const rulesArray = Array.isArray(dbrule) ? dbrule : [dbrule];
+
+// const victimViolations = await Promise.all(
+//   rulesArray.map(async (violation) => {
+    
+//     const rule = await dbrule.findById(violation);
+//     console.log("not ok");
+  
+//   if (!rule){
+//     res.status(404).json({message: "Rule not found"});
+//   }
+//     await violationlist.save();
+//   })
+//  )
+
+ 
+// await violationlist.save();
 
 // Calculate the total fine
 const totalFine = await victimViolations.reduce(
   async (totalPromise, violation) => {
     const total = await totalPromise;
-    const rule = await Rule.findById(violation.id);
+    // const rule = await rule.findById(violation);
     if (!rule) {
-      res.status(404).json({message:`Rule with ID ${violation.id} not found during calculation`});
+      res.status(404).json({message:`Rule with ID ${rule.id} not found during calculation`});
     }
-    return total + rule.price;
+    return total + rule.fine;
   },
   Promise.resolve(0)
 );
+// const totalFine = victimViolations.reduce((total, violation) => total + rule.fine, 0);
+
    
 const newViolationRecord = await violationlist.create({
     trafficPersonal,
     licenseNum,
     violator,
-    violationRecords:victimViolations,
-    fin:totalFine
+    violationRecords: victimViolations,
+    fine:totalFine
   });
 
   res.status(201).json({
