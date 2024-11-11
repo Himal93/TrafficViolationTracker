@@ -21,7 +21,6 @@ const violationlistSchema = new mongoose.Schema({
     licenseNum: {
         type: Number,
         required: true,
-        unique: true
     },
     violator: {
         type: String,
@@ -36,4 +35,4 @@ const violationlistSchema = new mongoose.Schema({
 
 // Export the model
 const ViolationList = mongoose.model("ViolationList", violationlistSchema);
-module.exports = { ViolationList };
+module.exports = ViolationList ;

@@ -48,20 +48,20 @@ router.get('/search/:licenseNumber', async (req, res) => {
 });
 
 // PUT /search/edit/:licenseNumber - Update violation record by licenseNumber
-router.patch('/search/edit/:licenseNumber', async (req, res) => {
-    const { violationRecord } = req.body;
+// router.patch('/search/edit/:licenseNumber', async (req, res) => {
+//     const { violationRecord } = req.body;
 
-     // Assuming we are updating only violation
-    try {
-        const updatedRecord = await Record.findOneAndUpdate(
-            { licenseNumber: req.params.licenseNumber },
-            { $set: { violationRecord } },
-            { new: true }
-        );
-        res.json(updatedRecord);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating record' });
-    }
-});
+//      // Assuming we are updating only violation
+//     try {
+//         const updatedRecord = await Record.findOneAndUpdate(
+//             { licenseNumber: req.params.licenseNumber },
+//             { $set: { violationRecord } },
+//             { new: true }
+//         );
+//         res.json(updatedRecord);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error updating record' });
+//     }
+// });
 
 module.exports = router;

@@ -27,7 +27,8 @@ const pedRecordsSchema = new mongoose.Schema({
     address:{
         type: String,
         required: true
-    }
+    },
+    violationRecords:[],
 },{timestamps:true});
 
 // Create ped model
