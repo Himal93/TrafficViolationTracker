@@ -52,14 +52,6 @@ router.post('/register',jwtAuthMiddleware, async(req,res)=>{
     try{
         const data = req.body  //assuming request body conatins user data
 
-        // // id role is admin, check if another admin exists
-        // if (data.role === 'admin') {
-        //     const adminExists = await checkAdminExists();
-        //     if (adminExists) {
-        //         return res.status(403).json({ message: 'Admin already exists. Only one admin is allowed.' });
-        //     }
-        // }
-
         // Create a new user document using Mongoose model
         const newUser = new User(data);
 
@@ -85,7 +77,7 @@ router.post('/register',jwtAuthMiddleware, async(req,res)=>{
 router.get('/getAllUser', async(req, res) =>{
   try{
       const data = await User.find();
-      console.log('data fetched');
+      // console.log('data fetched');
       res.status(200).json(data);
   }catch(err){
       console.log(err);

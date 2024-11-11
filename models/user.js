@@ -52,16 +52,6 @@ userSchema.pre('save', async function(next){
     }
 });
 
-// userSchema.methods.comparePassword = async function(candidatePassword){
-//     try{
-//         // use bcrypt to compare provided password with hashed password 
-//         //concept is compare function extract salt from storedhashPassword and uses it to hash the entered password the compares it if they match or not
-//         const isMatch = await bcrypt.compare(candidatePassword, this.password);
-//         return isMatch;
-//     }catch(err){
-//         res.status(400).json({message:"Password not matched"});  
-//     }
-// }
 // Define the comparePassword method
 userSchema.methods.comparePassword = async function(candidatePassword) {
     try {

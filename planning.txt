@@ -35,12 +35,12 @@ User Profile:
 
 Admin Management:
 /register: POST - to register user
-/records: POST - create a new record.
-/records: GET -get the list of record
 /rules: POST - create new rules
-/rules: GET - get the list of records
+/rules: GET - get the list of rules
 /rules: DELETE- delete rules
 /rules/:id: PUT -update existing rule
-/records/:recordID: PUT -update an existing record
+/records: POST - create a new pedrecord.
+/records: GET -get the list of pedrecord
+/records/:recordID: PATCH -update an existing record
 /records/:recordID: DELETE a record from list
 
