@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/pedrecord");
-const { jwtAuthMiddleware, generateToken } = require("../jwt");
+const { jwtAuthMiddleware, generateToken } = require("../middleware/jwt");
 const Pedrecord = require("../models/pedrecord");
 const file = require("../imageUploader");
 const Upload = require("../middleware/multer");
