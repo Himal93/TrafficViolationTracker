@@ -35,6 +35,7 @@ User Profile:
 
 Admin Management:
 /register: POST - to register user
+/getAllusers: GET - get list of users
 /rules: POST - create new rules
 /rules: GET - get the list of rules
 /rules: DELETE- delete rules

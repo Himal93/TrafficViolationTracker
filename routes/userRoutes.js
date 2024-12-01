@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./../models/user');
-const {jwtAuthMiddleware, generateToken} = require('../jwt');
+const {jwtAuthMiddleware, generateToken, generateRefreshToken} = require('../jwt');
 const Pedrecord = require('../models/pedrecord'); 
 const Rule = require('../models/Rule');
 const violationlist = require('../models/voilation.model');
-
+const mongoose = require('mongoose');
 
 // function to check if an admin exists
 // const checkAdminExists = async () => {
 //     const admin = await User.findOne({ role: 'admin' });
 //     return admin ? true : false;
 // };
-
-
 
 // Login route
 router.post('/login', async(req, res) =>{
@@ -26,26 +24,74 @@ router.post('/login', async(req, res) =>{
         
         // if user doesnt exist or password doesnt match, return err
         if(!user || !(await user.comparePassword(password))){
-            console.log( await user.comparePassword(password));
-            
             return res.status(401).json({error: 'Invalid badgeNumber or password'});
         }
-        res.status(200).json({message: 'Login Successful'});
 
         // generate token after expire
         const payload ={
             id: user.id,
-        }
-        const token = generateToken(payload);
+        };
+        const accessToken = generateToken(payload);
+        const refreshToken = generateRefreshToken(payload);
 
-        //return token as response
-        res.json({token: token});
+        // set token in HTTP-only cookie
+        res.cookie('accessToken', accessToken, {
+          httpOnly: false,
+          secure:false,
+          sameSite: 'strict',
+          maxAge : 15 * 60 * 1000, //15 min
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: false,
+          secure: false,
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        res.status(200).json({ message: 'Login Successful' });
 
     }catch(err){
         console.log(err);
         res.status(500).json('Internal server error');
     }
-})
+});
+
+// Refresh token endpoint
+router.post('/refreshToken', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Refresh token missing' });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const payload = { id: decoded.id };
+
+    // Generate a new access token
+    const newAccessToken = generateToken(payload);
+
+    // Set the new access token in cookies
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.status(200).json({ message: 'Access token refreshed' });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Invalid or expired refresh token' });
+  }
+});
+
+// logout route
+router.post('/logout', (req, res) => {
+  res.clearCookie('accessToken', {httpOnly: true, sameSite : 'strict'}); 
+  res.clearCookie('refreshToken', {httpOnly: true, sameSite : 'strict'});
+  res.status(200).json({ message: 'Logout successful' });
+});
 
 // profile route
 router.get('/profile',jwtAuthMiddleware ,async(req, res) =>{
@@ -75,11 +121,11 @@ router.get('/profile',jwtAuthMiddleware ,async(req, res) =>{
 // PUT method to change the password
 router.put('/profile/password', jwtAuthMiddleware, async(req,res)=>{
     try{
-        const userId = req.user; //extract the id from token
+        const userId = req.user.id; //extract the id from token
         const {currentPassword, newPassword} = req.body; //extract current and new password from request body
 
         // find the user by userID
-        const user = await User.findOne({userID});
+        const user = await User.findById(userId);
 
         // if password doesnt match, return err
         if(!(await user.comparePassword(currentPassword))){
@@ -129,13 +175,24 @@ router.patch('/violationRoute', async (req, res) => {
 
     // Extract only the `id` values from the `rule` array
     const ruleIds = rule.map(r => r.id);
-    console.log("Extracted ruleIds:", ruleIds);
+    // console.log("Extracted ruleIds:", ruleIds);
+
+    // need to review-->
+    // [// Validate Rule IDs
+    // if (ruleIds.some(ruleId => !mongoose.Types.ObjectId.isValid(ruleId))) {
+    //   return res.status(400).json({ message: 'One or more Rule IDs are invalid' });
+    // }
+
+    // // Fetch all rules in one go
+    // const victimViolations = await Rule.find({ _id: { $in: ruleIds } });
+    // if (victimViolations.length !== ruleIds.length) {
+    //   return res.status(400).json({ message: 'Some rules not found' });
+    // }]
 
     // Fetch and validate rules for each violation in the list
     const victimViolations = await Promise.all(
       ruleIds.map(async (ruleId) => {
-        console.log("Fetching rule with ID:", ruleId);
-        
+        // console.log("Fetching rule with ID:", ruleId);
         const ruleRecord = await Rule.findById(ruleId);
         if (!ruleRecord) {
           throw new Error(`Rule with ID ${ruleId} not found`);
