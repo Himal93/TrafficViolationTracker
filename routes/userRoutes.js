@@ -77,7 +77,8 @@ router.post("/refreshToken", async (req, res) => {
 
     // Set the new access token in cookies
     res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
+      httpOnly: false,
+      secure: false,
       sameSite: "strict",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });

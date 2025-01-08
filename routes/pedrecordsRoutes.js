@@ -41,9 +41,7 @@ router.post(
 
       const image = await file.uploadOnCloudinary(imageUpload);
       data.image = image.url;
-      console.log(data);
 
-      console.log(image.url);
       const newPedrecord = new Pedrecord(data);
       //Save the new pedrecord to the database
       const response = await newPedrecord.save();
@@ -90,7 +88,7 @@ router.put("/:pedrecordID", jwtAuthMiddleware, async (req, res) => {
 router.get("/getAllPedRecord", async (req, res) => {
   try {
     const data = await Pedrecord.find();
-    console.log("data fetched");
+    // console.log("data fetched");
     res.status(200).json(data);
   } catch (err) {
     console.log(err);
@@ -112,7 +110,7 @@ router.delete("/:pedrecordID", jwtAuthMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Pedrecord not found" });
     }
 
-    console.log("Pedrecord data updated");
+    // console.log("Pedrecord data updated");
     res.status(200).json(response);
   } catch (err) {
     console.log(err);
